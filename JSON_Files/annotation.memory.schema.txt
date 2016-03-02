@@ -1,0 +1,37 @@
+NUBMRN = NOT USED BY MENTOR RIGHT NOW
+
+---------------------------------------
+
+<annotation memory>:
+
+An annotation memory contains data about the annotation and its associated keypoints, descriptors, and homography -- both when the annotation was initially created, and what it is currently after having been anchored.
+
+Fields:
+	"initialAnnotation": <annotation>
+	"currentAnnotation": <annotation>
+
+	NUBMRN "initialRawKeyPoints": JSON array, converted from OpenCV's MatOfKeyPoint (see Protocol.matOfKeyPointToJSONArray() in the codebase)
+	NUBMRN "currentRawKeyPoints": JSON array, converted from OpenCV's MatOfKeyPoint (see Protocol.matOfKeyPointToJSONArray() in the codebase)
+
+	NUBMRN "initialKeyPoints": JSON array, converted from OpenCV's MatOfKeyPoint (see Protocol.matOfKeyPointToJSONArray() in the codebase)
+	NUBMRN "initialDescriptors": JSON object, converted from OpenCV's Mat (see Protocol.matToJSONObject() in the codebase)
+
+	NUBMRN "matches": JSON object, converted from OpenCV's Matches (see Protocol.matchesToJSONObject() in the codebase)
+	NUBMRN "currentHomography": JSON object, converted from OpenCV's Mat (see Protocol.matToJSONObject() in the codebase)
+
+The list of raw key points are those found when doing feature detection. When doing descriptor extraction, the number of raw keypoints can change and the result is placed in the other key points data. The matches represents which descriptors between the initial and the current descriptors are matched. The current homography is used when rendering to transform from the initial annotation to the current annotation -- it's a 3x3 matrix that initially is just the identity matrix.
+
+---------------------------------------
+
+<annotation>
+
+Fields:
+	"annotationType": string, either "point", "multi_point", "polyline", "polygon", or "tool"
+	"annotationPoints": JSON array, converted from OpenCV's MatOfPoint2f (see Protocol.matOfPoint2fToJSONArray() in the codebase)
+
+
+Fields used only by tool annotations:
+	"toolType": string, e.g. "bvm", "hemostat", etc. (see the "ToolType" class in the codebase for a list of all the tool types and their anchor points)
+	"rotation": float, rotation of tool annotation in degrees, from orientation in icon image to how it's placed on screen
+	"scale": float, scale of tool annotation, from original size of icon image to how it's placed on screen. e.g. scale of 2 = twice as big
+	"selectableColor": integer, randomly generated integer representing opaque ARGB color. This is used when rendering to know which tool is being selected by the user. There's a separate framebuffer that renders each tool icon with only this color, and then the user's touch location is sampled to see the color at the cursor location. By looking up this color in the list of annotations, we know which annotation was selected.
